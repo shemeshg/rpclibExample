@@ -15,6 +15,7 @@ FetchContent_MakeAvailable(rpclib)
 
 
 add_subdirectory(SMngr/libSMngr)
+add_subdirectory(pyclient)
 
 # Server
 add_executable(server
