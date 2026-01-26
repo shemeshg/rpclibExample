@@ -9,7 +9,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-add_executable(tests movavg_test.cpp)
+add_executable(tests smngr_test.cpp)
 
 target_link_libraries(tests
     libSMngr
