@@ -13,12 +13,15 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(rpclib)
 
+
+add_subdirectory(SMngr/libSMngr)
+
 # Server
 add_executable(server
     server.cc
 )
 
-target_link_libraries(server PRIVATE rpc)
+target_link_libraries(server PRIVATE rpc libSMngr)
 
 # Client
 add_executable(client
