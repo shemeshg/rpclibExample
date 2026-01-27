@@ -11,16 +11,18 @@ PYBIND11_MODULE(pyclient, m)
              py::arg("hostPort"))
         .def("start", &ServerBal::start,
              py::call_guard<py::gil_scoped_release>(),
-             "Run server");             
+             "Run server")
+        .def("startAsync", &ServerBal::startAsync,
+             "Run server async");
 
     py::class_<AsyncData<double>>(m, "AsyncDataDouble")
         .def("get", &AsyncData<double>::get);
-
 
     py::class_<ClientBal>(m, "ClientBal")
         .def(py::init<std::string, uint16_t>(),
              py::arg("hostName"),
              py::arg("hostPort"))
         .def("add", &ClientBal::add<double>, "Add two numbers through RPC")
-        .def("serverStop", &ClientBal::serverStop, "Stop server");
+        .def("serverStop", &ClientBal::serverStop, "Stop server")
+        .def("setClientTimeout", &ClientBal::setClientTimeout, "Set client timeout in ms");
 }
