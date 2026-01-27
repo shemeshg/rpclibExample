@@ -12,3 +12,5 @@ FetchContent_MakeAvailable(pybind11)
 
 # Create Python module
 pybind11_add_module(pyclient pyclient.cpp)
+
+target_link_libraries(pyclient PRIVATE clientBal rpc)
