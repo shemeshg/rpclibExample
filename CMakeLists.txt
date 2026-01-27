@@ -17,13 +17,14 @@ FetchContent_MakeAvailable(rpclib)
 add_subdirectory(SMngr/libSMngr)
 add_subdirectory(pyclient)
 add_subdirectory(clientBal)
+add_subdirectory(serverBal)
 
 # Server
 add_executable(server
     server.cc
 )
 
-target_link_libraries(server PRIVATE rpc libSMngr)
+target_link_libraries(server PRIVATE rpc serverBal libSMngr)
 
 # Client
 add_executable(client
