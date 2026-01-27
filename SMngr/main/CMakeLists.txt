@@ -2,10 +2,10 @@ set(Main_SRCS
     main.cpp
 )
 
-add_executable(movavg
+add_executable(SMngr
     ${Main_SRCS}
 )
-target_link_libraries(movavg libSMngr)
+target_link_libraries(SMngr libSMngr)
  
 
-install(TARGETS movavg DESTINATION bin)
+install(TARGETS SMngr DESTINATION bin)

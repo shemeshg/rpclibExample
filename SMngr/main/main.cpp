@@ -6,6 +6,6 @@
 int main(int ac, char *av[])
 {
 
-
+    std::cout<<getUuid();
     return 0;
 }

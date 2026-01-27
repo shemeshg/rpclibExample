@@ -1,3 +1,5 @@
+find_package(Boost CONFIG REQUIRED)
+
 set(libSMngr_SRCS
     libSMngr.h
     libSMngr.cpp
@@ -13,3 +15,8 @@ add_library(libSMngr STATIC
 target_include_directories(libSMngr PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+target_link_libraries(libSMngr PRIVATE Boost::boost)
+
+
+
