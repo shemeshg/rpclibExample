@@ -13,16 +13,18 @@ public:
                  { return add(a, b); });
         srv.bind("stop", []()
                  { rpc::this_server().stop(); });
+        srv.bind("getUuid", []()
+                        { return getUuid(); });                 
         srv.bind("CounterExampleServerinit", [this](std::string uuid, int initialValue)
                  { sessionState.emplace(uuid, CounterExampleServer(initialValue)); });
         srv.bind("CounterExampleServerAdd",
-                 [this](const std::string &uuid, int val) -> void
+                 [this](const std::string &uuid, int val) 
                  {
                      auto ptr = getSessionObj<CounterExampleServer>(uuid);
                      ptr->add(val);
                  });
         srv.bind("CounterExampleServerGet",
-                 [this](const std::string &uuid, int val) -> int
+                 [this](const std::string &uuid)
                  {
                      auto ptr = getSessionObj<CounterExampleServer>(uuid);
                      return ptr->get();

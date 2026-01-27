@@ -18,9 +18,7 @@ PYBIND11_MODULE(pyclient, m)
      py::class_<AsyncData<double>>(m, "AsyncDataDouble")
          .def("get", &AsyncData<double>::get);
 
-     py::class_<CounterExample>(m, "CounterExample")
-         .def(py::init<int>(),
-              py::arg("initialValue"))     
+     py::class_<CounterExample>(m, "CounterExample") 
          .def("get", &CounterExample::get)
          .def("add", &CounterExample::add)
          ;

@@ -20,19 +20,21 @@ private:
 
 class CounterExample {
     public:
-    explicit CounterExample(int initialValue):val{initialValue}{
-
+    explicit CounterExample(rpc::client *c, int initialValue):c{c}{
+        uuid = c->call("getUuid").as<std::string>();
+        c->call("CounterExampleServerinit",uuid, initialValue);
     }
     void add(int i){
-        this->val += i;
+        c->call("CounterExampleServerAdd",uuid, i);
     }
 
     int get(){
-        return this->val;
+        return c->call("CounterExampleServerGet", uuid).as<int>();
     }
 
     private:
-    int val;
+    rpc::client *c;
+    std::string uuid;
 };
 
 class ClientBal
@@ -65,7 +67,7 @@ public:
 
     CounterExample getCounterExample(int initialValue){
         validateConnection();
-        return CounterExample(initialValue);
+        return CounterExample(&c, initialValue);
     }
 
 private:
