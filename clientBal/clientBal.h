@@ -22,10 +22,10 @@ class ClientBal {
     }
 
     template <typename T>
-    T add(T a, T b){        
+    AsyncData<T> add(T a, T b){        
         std::future<RPCLIB_MSGPACK::object_handle> a_future = c.async_call("add", a, b);
         AsyncData<T> ad(std::move(a_future));
-        return ad.get();
+        return ad;
     }
     
     private:
