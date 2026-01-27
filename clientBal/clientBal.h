@@ -23,8 +23,9 @@ class CounterExample {
     CounterExample(const CounterExample&) = delete;
     CounterExample& operator=(const CounterExample&) = delete;
 
-    explicit CounterExample(rpc::client *c, int initialValue):c{c}{
-        uuid = c->call("getUuid").as<std::string>();
+    explicit CounterExample(rpc::client *c, int initialValue):
+    c{c}, uuid{c->call("getUuid").as<std::string>()}
+    {
         c->call("CounterExampleServerinit",uuid, initialValue);
     }
     void add(int i){
