@@ -17,5 +17,5 @@ PYBIND11_MODULE(pyclient, m)
         .def(py::init<std::string, uint16_t>(),
          py::arg("hostName"), 
          py::arg("hostPort"))
-        .def("add", &ClientBal::add, "Add two numbers through RPC");
+        .def("add", &ClientBal::add<double>, "Add two numbers through RPC");
 }

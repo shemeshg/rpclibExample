@@ -1,13 +1,31 @@
 #pragma once
 #include <rpc/client.h>
 
+template <typename T>
+class AsyncData { 
+    public:
+    explicit AsyncData(std::future<RPCLIB_MSGPACK::object_handle>&& fut) : 
+    a_future(std::move(fut)) 
+    {}
+
+    T get(){
+       return a_future.get().template as<T>();
+    }
+
+    private:
+    std::future<RPCLIB_MSGPACK::object_handle> a_future;
+};
+
 class ClientBal {
     public:
     ClientBal(std::string hostName, uint16_t hostPort):c{hostName, hostPort}{        
     }
 
-    double add(double a, double b){
-        return c.call("add", 2, 3).as<double>();
+    template <typename T>
+    T add(T a, T b){        
+        std::future<RPCLIB_MSGPACK::object_handle> a_future = c.async_call("add", a, b);
+        AsyncData<T> ad(std::move(a_future));
+        return ad.get();
     }
     
     private:
