@@ -20,6 +20,9 @@ private:
 
 class CounterExample {
     public:
+    CounterExample(const CounterExample&) = delete;
+    CounterExample& operator=(const CounterExample&) = delete;
+
     explicit CounterExample(rpc::client *c, int initialValue):c{c}{
         uuid = c->call("getUuid").as<std::string>();
         c->call("CounterExampleServerinit",uuid, initialValue);
@@ -32,6 +35,10 @@ class CounterExample {
         return c->call("CounterExampleServerGet", uuid).as<int>();
     }
 
+    virtual ~CounterExample(){
+        c->call("eraseSessionState",uuid);
+    }
+
     private:
     rpc::client *c;
     std::string uuid;
@@ -40,6 +47,8 @@ class CounterExample {
 class ClientBal
 {
 public:
+    ClientBal(const ClientBal&) = delete;
+    ClientBal& operator=(const ClientBal&) = delete;
     ClientBal(std::string hostName, uint16_t hostPort) : c{hostName, hostPort}
     {
         setClientTimeout(1000);
@@ -65,9 +74,9 @@ public:
         c.call("stop");
     }
 
-    CounterExample getCounterExample(int initialValue){
+    std::unique_ptr<CounterExample> getCounterExample(int initialValue){
         validateConnection();
-        return CounterExample(&c, initialValue);
+        return std::make_unique<CounterExample>(&c, initialValue);
     }
 
 private:
