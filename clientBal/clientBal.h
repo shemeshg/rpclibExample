@@ -18,6 +18,23 @@ private:
     std::future<RPCLIB_MSGPACK::object_handle> a_future;
 };
 
+class CounterExample {
+    public:
+    explicit CounterExample(int initialValue):val{initialValue}{
+
+    }
+    void add(int i){
+        this->val += i;
+    }
+
+    int get(){
+        return this->val;
+    }
+
+    private:
+    int val;
+};
+
 class ClientBal
 {
 public:
@@ -44,6 +61,11 @@ public:
     {
         validateConnection();
         c.call("stop");
+    }
+
+    CounterExample getCounterExample(int initialValue){
+        validateConnection();
+        return CounterExample(initialValue);
     }
 
 private:
