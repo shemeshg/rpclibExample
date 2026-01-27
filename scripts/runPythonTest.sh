@@ -16,6 +16,11 @@ s.startAsync()
 c = ClientBal("localhost",8080)
 print(c.add(1, 2).get())
 
+def run_once():
+    a = c.getCounterExample(2)
+    a.add(20)
+    print(a.get())
+run_once()
 EOF
 
 python3 -i "$tmpfile"
