@@ -2,51 +2,65 @@
 #include <rpc/client.h>
 #include <rpc/rpc_error.h>
 template <typename T>
-class AsyncData { 
-    public:
-    explicit AsyncData(std::future<RPCLIB_MSGPACK::object_handle>&& fut) : 
-    a_future(std::move(fut)) 
-    {}
-
-    T get(){
-       return a_future.get().template as<T>();
+class AsyncData
+{
+public:
+    explicit AsyncData(std::future<RPCLIB_MSGPACK::object_handle> &&fut) : a_future(std::move(fut))
+    {
     }
 
-    private:
+    T get()
+    {
+        return a_future.get().template as<T>();
+    }
+
+private:
     std::future<RPCLIB_MSGPACK::object_handle> a_future;
 };
 
-class ClientBal {
-    public:
-    ClientBal(std::string hostName, uint16_t hostPort):c{hostName, hostPort}{   
-        c.set_timeout(1000);     
+class ClientBal
+{
+public:
+    ClientBal(std::string hostName, uint16_t hostPort) : c{hostName, hostPort}
+    {
+        setClientTimeout(1000);
+    }
+
+    void setClientTimeout(int i){
+        clientTimeout = i;
+        c.set_timeout(clientTimeout);
     }
 
     template <typename T>
-    AsyncData<T> add(T a, T b){    
-        validateConnection();    
+    AsyncData<T> add(T a, T b)
+    {
+        validateConnection();
         std::future<RPCLIB_MSGPACK::object_handle> a_future = c.async_call("add", a, b);
         AsyncData<T> ad(std::move(a_future));
         return ad;
     }
-    
-    void serverStop() {
+
+    void serverStop()
+    {
         validateConnection();
         c.call("stop");
     }
 
-    private:
-        rpc::client c;
-        void validateConnection(){
-            if (c.get_connection_state() == rpc::client::connection_state::connected){
-                return;
-            }
-            using namespace std::chrono_literals;
-            std::this_thread::sleep_for(1s);
-            if (c.get_connection_state() != rpc::client::connection_state::connected){
-                    throw rpc::system_error(std::make_error_code(std::errc::connection_aborted),
-                                            "Client disconnected");
-
-            }
+private:
+    rpc::client c;
+    int clientTimeout = 1000;
+    void validateConnection()
+    {
+        if (c.get_connection_state() == rpc::client::connection_state::connected)
+        {
+            return;
         }
-}; 
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(std::chrono::milliseconds(clientTimeout));
+        if (c.get_connection_state() != rpc::client::connection_state::connected)
+        {
+            throw rpc::system_error(std::make_error_code(std::errc::connection_aborted),
+                                    "Client disconnected");
+        }
+    }
+};
