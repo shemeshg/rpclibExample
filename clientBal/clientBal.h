@@ -82,6 +82,7 @@ public:
 private:
     rpc::client c;
     int clientTimeout = 1000;
+    const int initialTimeToConnect = 500;
     void validateConnection()
     {
         if (c.get_connection_state() == rpc::client::connection_state::connected)
@@ -89,7 +90,7 @@ private:
             return;
         }
         using namespace std::chrono_literals;
-        std::this_thread::sleep_for(std::chrono::milliseconds(clientTimeout));
+        std::this_thread::sleep_for(std::chrono::milliseconds(initialTimeToConnect));
         if (c.get_connection_state() != rpc::client::connection_state::connected)
         {
             throw rpc::system_error(std::make_error_code(std::errc::connection_aborted),
