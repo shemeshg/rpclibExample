@@ -28,6 +28,10 @@ class ClientBal {
         return ad;
     }
     
+    void serverStop() {
+        c.call("stop");
+    }
+
     private:
         rpc::client c;
-};
+}; 

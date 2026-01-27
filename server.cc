@@ -3,7 +3,7 @@
 int main() {
     ServerBal srv{8080};
     
-    srv.run();
+    srv.start();
 
     return 0;
 }
