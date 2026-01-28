@@ -69,21 +69,9 @@ public:
                      }
                      return ptr->get();
                  });
-        srv.bind("sessionStateErase",
-                 [this](const std::string &uuid)
-                 {
-                     std::lock_guard<std::mutex> lock(sessionMutex);
-                     auto it = serverBalSession.sessionState.find(uuid);
-                     if (it != serverBalSession.sessionState.end())
-                     {
-                         serverBalSession.sessionState.erase(it);
-                     }
-                     // We dont throw exceptionif not found because it might have been destroid because of timeout
-                 });
-        srv.bind("sessionStateCleanup", [this]()
-                 { 
-                    std::lock_guard<std::mutex> lock(sessionMutex);
-                    serverBalSession.sessionStateCleanup(); });
+        // Bind ServerBalSession
+        serverBalSession.rpcServerBind(&srv, &sessionMutex);
+
     }
 
     void start()

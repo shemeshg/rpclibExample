@@ -1,10 +1,29 @@
 #pragma once
 #include <libSMngr.h>
 #include "CounterExampleServer.h"
+#include <rpc/server.h>
 
 class ServerBalSession
 {
 public:
+    void rpcServerBind(rpc::server *srv, std::mutex *sessionMutex){
+        srv->bind("sessionStateErase",
+                 [this, sessionMutex](const std::string &uuid)
+                 {
+                     std::lock_guard<std::mutex> lock(*sessionMutex);
+                     auto it = sessionState.find(uuid);
+                     if (it != sessionState.end())
+                     {
+                         sessionState.erase(it);
+                     }
+                     // We dont throw exceptionif not found because it might have been destroid because of timeout
+                 });
+        srv->bind("sessionStateCleanup", [this, sessionMutex]()
+                 { 
+                    std::lock_guard<std::mutex> lock(*sessionMutex);
+                    sessionStateCleanup(); });                 
+    }
+
     template <typename T>
     T *getSessionObj(std::string uuid)
     {
