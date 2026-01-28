@@ -7,6 +7,15 @@
 class ServerBalSession
 {
 public:
+    explicit ServerBalSession(rpc::server *srv){
+        rpcServerBind(srv);
+        rpcServerBindCounterExampleServer(srv);
+    }
+    virtual ~ServerBalSession(){}
+    private:
+
+    
+
     void rpcServerBind(rpc::server *srv)
     {
         srv->bind("sessionStateErase",
@@ -130,6 +139,6 @@ public:
         std::variant<CounterExampleServer>>
         sessionState;
 
-private:
+
     std::mutex sessionMutex;
 };

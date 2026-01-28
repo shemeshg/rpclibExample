@@ -10,12 +10,10 @@
 class ServerBal
 {
 public:
-    ServerBal(uint16_t hostPort) : srv{hostPort}
+    ServerBal(uint16_t hostPort) : srv{hostPort}, serverBalSession{&srv}
     {
         rpcServerBind();
-        
-        serverBalSession.rpcServerBind(&srv);
-        serverBalSession.rpcServerBindCounterExampleServer(&srv);
+    
     }
 
     void rpcServerBind()
