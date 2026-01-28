@@ -4,36 +4,40 @@
 #include <rpc/this_handler.h>
 #include "CounterExampleServer.h"
 
-class CounterExampleServerSession {
-    public:
-        explicit CounterExampleServerSession(rpc::server *srv, std::mutex *sessionMutex, 
-            std::unordered_map<
-        std::string,
-        std::variant<CounterExampleServer>>
-        *sessionState){
-            rpcServerBind(srv, sessionMutex, sessionState);
-        }
+class CounterExampleServerSession
+{
+public:
+    explicit CounterExampleServerSession(rpc::server *srv, std::mutex *sessionMutex,
+                                         std::unordered_map<
+                                             std::string,
+                                             std::unique_ptr<SessionStateItem>>
+                                             *sessionState)
+    {
+        rpcServerBind(srv, sessionMutex, sessionState);
+    }
 
-        ~CounterExampleServerSession(){}
-    private:
+    ~CounterExampleServerSession() {}
 
-      void rpcServerBind(rpc::server *srv, std::mutex *sessionMutex, 
-            std::unordered_map<
-        std::string,
-        std::variant<CounterExampleServer>>
-        *sessionState){
+private:
+    void rpcServerBind(rpc::server *srv, std::mutex *sessionMutex,
+                       std::unordered_map<
+                           std::string,
+                           std::unique_ptr<SessionStateItem>>
+                           *sessionState)
+    {
         srv->bind("CounterExampleServerinit", [sessionMutex, sessionState](std::string uuid, int initialValue)
                   { 
                     std::lock_guard<std::mutex> lock(*sessionMutex);
-                    sessionState->emplace(uuid, CounterExampleServer(initialValue)); });
+                    sessionState->emplace(uuid, std::make_unique<CounterExampleServer>(initialValue)); });
         srv->bind("CounterExampleServerExpiredAt",
                   [this, sessionState](const std::string &uuid, int val)
                   {
-                      CounterExampleServer *ptr = nullptr;
                       try
                       {
-                          ptr = getSessionObj<CounterExampleServer>(sessionState, uuid);
-                          ptr->setExpiredAt(val);
+                          if (auto *ptr = dynamic_cast<CounterExampleServer *>(getSessionObj(sessionState, uuid)))
+                          {
+                              ptr->setExpiredAt(val);
+                          }
                       }
                       catch (const std::exception &e)
                       {
@@ -44,11 +48,13 @@ class CounterExampleServerSession {
         srv->bind("CounterExampleServerAdd",
                   [this, sessionState](const std::string &uuid, int val)
                   {
-                      CounterExampleServer *ptr = nullptr;
                       try
                       {
-                          ptr = getSessionObj<CounterExampleServer>(sessionState, uuid);
-                          ptr->add(val);
+                          auto *ptr = dynamic_cast<CounterExampleServer *>(getSessionObj(sessionState, uuid));
+                          if (ptr)
+                          {
+                              ptr->add(val);
+                          }
                       }
                       catch (const std::exception &e)
                       {
@@ -62,7 +68,7 @@ class CounterExampleServerSession {
                       CounterExampleServer *ptr = nullptr;
                       try
                       {
-                          ptr = getSessionObj<CounterExampleServer>(sessionState, uuid);
+                          ptr = dynamic_cast<CounterExampleServer *>(getSessionObj(sessionState, uuid));
                       }
                       catch (const std::exception &e)
                       {
@@ -71,29 +77,19 @@ class CounterExampleServerSession {
                       }
                       return ptr->get();
                   });
-      }
+    }
 
-      private:
-    template <typename T>
-    T *getSessionObj(std::unordered_map<
-        std::string,
-        std::variant<CounterExampleServer>>
-        *sessionState, std::string uuid)
+private:
+    SessionStateItem *getSessionObj(
+        std::unordered_map<std::string, std::unique_ptr<SessionStateItem>> *sessionState,
+        const std::string &uuid)
     {
         auto it = sessionState->find(uuid);
         if (it == sessionState->end())
         {
             throw std::runtime_error("Unexpected: session '" + uuid + "' not found");
         }
-        auto &var = it->second;
 
-        auto ptr = std::get_if<T>(&var);
-        if (!ptr)
-        {
-            throw std::runtime_error("Unexpected: session '" + uuid +
-                                     "' does not contain CounterExampleServer");
-        }
-        return ptr;
+        return it->second.get(); // extract raw pointer from unique_ptr
     }
-
 };

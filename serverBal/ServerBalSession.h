@@ -7,16 +7,13 @@
 class ServerBalSession
 {
 public:
-    explicit ServerBalSession(rpc::server *srv): 
-    counterExampleServerSession{srv, &sessionMutex , &sessionState}{
+    explicit ServerBalSession(rpc::server *srv) : counterExampleServerSession{srv, &sessionMutex, &sessionState}
+    {
         rpcServerBind(srv);
-        
     }
-    virtual ~ServerBalSession(){}
-    
-    
-    
-    private:
+    virtual ~ServerBalSession() {}
+
+private:
     CounterExampleServerSession counterExampleServerSession;
 
     void rpcServerBind(rpc::server *srv)
@@ -42,34 +39,31 @@ public:
     {
         for (auto it = sessionState.begin(); it != sessionState.end();)
         {
-            bool erase = false;
+            SessionStateItem *base = it->second.get(); // stored pointer
 
-            std::visit([&](auto &item)
-                       {
-        SessionStateItem* base = dynamic_cast<SessionStateItem*>(&item);
-        if (!base) {
-            throw std::runtime_error(
-                "Unexpected: session '" + it->first +
-                "' does not contain SessionStateItem"
-            );
-        }
+            if (!base)
+            {
+                throw std::runtime_error(
+                    "Unexpected: session '" + it->first +
+                    "' contains a null SessionStateItem pointer");
+            }
 
-        if (base->expiredAt() < currentUtcTime() && base->expiredAt() != -1) {
-            erase = true;
-        } }, it->second);
-
-            if (erase)
+            const auto exp = base->expiredAt();
+            if (exp != -1 && exp < currentUtcTime())
+            {
                 it = sessionState.erase(it);
+            }
             else
+            {
                 ++it;
+            }
         }
     }
 
     std::unordered_map<
         std::string,
-        std::variant<CounterExampleServer>>
+        std::unique_ptr<SessionStateItem>>
         sessionState;
-
 
     std::mutex sessionMutex;
 };
