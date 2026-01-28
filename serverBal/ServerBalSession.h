@@ -60,10 +60,7 @@ private:
         }
     }
 
-    std::unordered_map<
-        std::string,
-        std::unique_ptr<SessionStateItem>>
-        sessionState;
+    sessionItemMapType sessionState;
 
     std::mutex sessionMutex;
 };

@@ -8,8 +8,8 @@ cat > "$tmpfile" <<EOF
 
 from pyclient import ClientBal, ServerBal
 
-#s = ServerBal(8080)
-#s.startAsync()
+s = ServerBal(8080)
+s.startAsync()
 
 # import threading
 # threading.Thread(target=s.run, daemon=True).start()

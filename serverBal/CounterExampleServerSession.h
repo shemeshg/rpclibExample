@@ -8,9 +8,7 @@ class CounterExampleServerSession
 {
 public:
     explicit CounterExampleServerSession(rpc::server *srv, std::mutex *sessionMutex,
-                                         std::unordered_map<
-                                             std::string,
-                                             std::unique_ptr<SessionStateItem>>
+                                         sessionItemMapType
                                              *sessionState)
     {
         rpcServerBind(srv, sessionMutex, sessionState);
@@ -20,9 +18,7 @@ public:
 
 private:
     void rpcServerBind(rpc::server *srv, std::mutex *sessionMutex,
-                       std::unordered_map<
-                           std::string,
-                           std::unique_ptr<SessionStateItem>>
+                       sessionItemMapType
                            *sessionState)
     {
         srv->bind("CounterExampleServerinit", [sessionMutex, sessionState](std::string uuid, int initialValue)
@@ -81,7 +77,7 @@ private:
 
 private:
     SessionStateItem *getSessionObj(
-        std::unordered_map<std::string, std::unique_ptr<SessionStateItem>> *sessionState,
+        sessionItemMapType *sessionState,
         const std::string &uuid)
     {
         auto it = sessionState->find(uuid);
