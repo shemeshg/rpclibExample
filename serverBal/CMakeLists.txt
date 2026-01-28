@@ -1,8 +1,8 @@
 set(serverBal_SRCS
-    serverBal.h
     serverBal.cpp
     SessionStateItem.cpp
     CounterExampleServer.cpp 
+    ServerBalSession.cpp
 
 )
 
