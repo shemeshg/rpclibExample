@@ -7,92 +7,26 @@
 #include "SessionStateItem.h"
 #include "CounterExampleServer.h"
 
-class ServerBal
+class ServerBalSession
 {
 public:
-    ServerBal(uint16_t hostPort) : srv{hostPort}
+    template <typename T>
+    T *getSessionObj(std::string uuid)
     {
-        srv.bind("add", [](double a, double b)
-                 { return add(a, b); });
-        srv.bind("stop", []()
-                 { rpc::this_server().stop(); });
-        srv.bind("getUuid", []()
-                 { return getUuid(); });
-        srv.bind("CounterExampleServerinit", [this](std::string uuid, int initialValue)
-                 { 
-                    std::lock_guard<std::mutex> lock(sessionMutex);
-                    sessionState.emplace(uuid, CounterExampleServer(initialValue)); });
-        srv.bind("CounterExampleServerExpiredAt",
-                 [this](const std::string &uuid, int val)
-                 {
-                     CounterExampleServer *ptr = nullptr;
-                     try
-                     {
-                         ptr = getSessionObj<CounterExampleServer>(uuid);
-                         ptr->setExpiredAt(val);
-                     }
-                     catch (const std::exception &e)
-                     {
-                         rpc::this_handler().respond_error(
-                             std::make_tuple(11, e.what()));
-                     }
-                 });
-        srv.bind("CounterExampleServerAdd",
-                 [this](const std::string &uuid, int val)
-                 {
-                     CounterExampleServer *ptr = nullptr;
-                     try
-                     {
-                         ptr = getSessionObj<CounterExampleServer>(uuid);
-                         ptr->add(val);
-                     }
-                     catch (const std::exception &e)
-                     {
-                         rpc::this_handler().respond_error(
-                             std::make_tuple(11, e.what()));
-                     }
-                 });
-        srv.bind("CounterExampleServerGet",
-                 [this](const std::string &uuid)
-                 {
-                     CounterExampleServer *ptr = nullptr;
-                     try
-                     {
-                         ptr = getSessionObj<CounterExampleServer>(uuid);
-                     }
-                     catch (const std::exception &e)
-                     {
-                         rpc::this_handler().respond_error(
-                             std::make_tuple(11, e.what()));
-                     }
-                     return ptr->get();
-                 });
-        srv.bind("sessionStateErase",
-                 [this](const std::string &uuid)
-                 {
-                     std::lock_guard<std::mutex> lock(sessionMutex);
-                     auto it = sessionState.find(uuid);
-                     if (it != sessionState.end())
-                     {
-                         sessionState.erase(it); 
-                     }
-                     // We dont throw exceptionif not found because it might have been destroid because of timeout
-                 });
-        srv.bind("sessionStateCleanup", [this]()
-                 { 
-                    std::lock_guard<std::mutex> lock(sessionMutex);
-                    sessionStateCleanup(); });
-    }
+        auto it = this->sessionState.find(uuid);
+        if (it == sessionState.end())
+        {
+            throw std::runtime_error("Unexpected: session '" + uuid + "' not found");
+        }
+        auto &var = it->second;
 
-    void start()
-    {
-        srv.run();
-    }
-
-    void startAsync()
-    {
-        std::size_t thread_count = std::thread::hardware_concurrency();
-        srv.async_run(thread_count);
+        auto ptr = std::get_if<T>(&var);
+        if (!ptr)
+        {
+            throw std::runtime_error("Unexpected: session '" + uuid +
+                                     "' does not contain CounterExampleServer");
+        }
+        return ptr;
     }
 
     void sessionStateCleanup()
@@ -122,30 +56,104 @@ public:
         }
     }
 
-private:
-    rpc::server srv;
-    std::mutex sessionMutex;
     std::unordered_map<
         std::string,
         std::variant<CounterExampleServer>>
         sessionState;
 
-    template <typename T>
-    T *getSessionObj(std::string uuid)
-    {
-        auto it = this->sessionState.find(uuid);
-        if (it == sessionState.end())
-        {
-            throw std::runtime_error("Unexpected: session '" + uuid + "' not found");
-        }
-        auto &var = it->second;
+private:
+};
 
-        auto ptr = std::get_if<T>(&var);
-        if (!ptr)
-        {
-            throw std::runtime_error("Unexpected: session '" + uuid +
-                                     "' does not contain CounterExampleServer");
-        }
-        return ptr;
+class ServerBal
+{
+public:
+    ServerBal(uint16_t hostPort) : srv{hostPort}
+    {
+        srv.bind("add", [](double a, double b)
+                 { return add(a, b); });
+        srv.bind("stop", []()
+                 { rpc::this_server().stop(); });
+        srv.bind("getUuid", []()
+                 { return getUuid(); });
+        srv.bind("CounterExampleServerinit", [this](std::string uuid, int initialValue)
+                 { 
+                    std::lock_guard<std::mutex> lock(sessionMutex);
+                    serverBalSession.sessionState.emplace(uuid, CounterExampleServer(initialValue)); });
+        srv.bind("CounterExampleServerExpiredAt",
+                 [this](const std::string &uuid, int val)
+                 {
+                     CounterExampleServer *ptr = nullptr;
+                     try
+                     {
+                         ptr = serverBalSession.getSessionObj<CounterExampleServer>(uuid);
+                         ptr->setExpiredAt(val);
+                     }
+                     catch (const std::exception &e)
+                     {
+                         rpc::this_handler().respond_error(
+                             std::make_tuple(11, e.what()));
+                     }
+                 });
+        srv.bind("CounterExampleServerAdd",
+                 [this](const std::string &uuid, int val)
+                 {
+                     CounterExampleServer *ptr = nullptr;
+                     try
+                     {
+                         ptr = serverBalSession.getSessionObj<CounterExampleServer>(uuid);
+                         ptr->add(val);
+                     }
+                     catch (const std::exception &e)
+                     {
+                         rpc::this_handler().respond_error(
+                             std::make_tuple(11, e.what()));
+                     }
+                 });
+        srv.bind("CounterExampleServerGet",
+                 [this](const std::string &uuid)
+                 {
+                     CounterExampleServer *ptr = nullptr;
+                     try
+                     {
+                         ptr = serverBalSession.getSessionObj<CounterExampleServer>(uuid);
+                     }
+                     catch (const std::exception &e)
+                     {
+                         rpc::this_handler().respond_error(
+                             std::make_tuple(11, e.what()));
+                     }
+                     return ptr->get();
+                 });
+        srv.bind("sessionStateErase",
+                 [this](const std::string &uuid)
+                 {
+                     std::lock_guard<std::mutex> lock(sessionMutex);
+                     auto it = serverBalSession.sessionState.find(uuid);
+                     if (it != serverBalSession.sessionState.end())
+                     {
+                         serverBalSession.sessionState.erase(it);
+                     }
+                     // We dont throw exceptionif not found because it might have been destroid because of timeout
+                 });
+        srv.bind("sessionStateCleanup", [this]()
+                 { 
+                    std::lock_guard<std::mutex> lock(sessionMutex);
+                    serverBalSession.sessionStateCleanup(); });
     }
+
+    void start()
+    {
+        srv.run();
+    }
+
+    void startAsync()
+    {
+        std::size_t thread_count = std::thread::hardware_concurrency();
+        srv.async_run(thread_count);
+    }
+
+private:
+    rpc::server srv;
+    ServerBalSession serverBalSession;
+    std::mutex sessionMutex;
 };
