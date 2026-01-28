@@ -16,7 +16,10 @@ public:
         srv.bind("getUuid", []()
                  { return getUuid(); });
         srv.bind("CounterExampleServerinit", [this](std::string uuid, int initialValue)
-                 { sessionState.emplace(uuid, CounterExampleServer(initialValue)); });
+                 { 
+                    std::lock_guard<std::mutex> lock(sessionMutex);
+                    sessionState.emplace(uuid, CounterExampleServer(initialValue)); 
+                });
         srv.bind("CounterExampleServerAdd",
                  [this](const std::string &uuid, int val)
                  {
@@ -32,6 +35,7 @@ public:
         srv.bind("sessionStateErase",
                  [this](const std::string &uuid)
                  {
+                    std::lock_guard<std::mutex> lock(sessionMutex);
                      auto it = sessionState.find(uuid);
                      if (it != sessionState.end())
                      {
@@ -43,7 +47,10 @@ public:
                      }
                  });
         srv.bind("sessionStateCleanup", [this]()
-                 { sessionStateCleanup(); });
+                 { 
+                    std::lock_guard<std::mutex> lock(sessionMutex);
+                    sessionStateCleanup();
+                 });
     }
 
     void start()
@@ -86,6 +93,7 @@ public:
 
 private:
     rpc::server srv;
+    std::mutex sessionMutex;
     std::unordered_map<
         std::string,
         std::variant<CounterExampleServer>>
