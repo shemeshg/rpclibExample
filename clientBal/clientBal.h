@@ -37,7 +37,7 @@ class CounterExample {
     }
 
     virtual ~CounterExample(){
-        c->call("eraseSessionState",uuid);
+        c->call("sessionStateErase",uuid);
     }
 
     private:
@@ -73,6 +73,11 @@ public:
     {
         validateConnection();
         c.call("stop");
+    }
+
+    void sessionStateCleanup(){
+        validateConnection();
+        c.call("sessionStateCleanup");        
     }
 
     std::unique_ptr<CounterExample> getCounterExample(int initialValue){

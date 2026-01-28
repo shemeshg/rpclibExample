@@ -14,7 +14,7 @@ int main(int ac, char *av[])
     //Date.now()
     using namespace std::chrono;
 
-    long long jsTime = duration_cast<milliseconds>(
+    auto jsTime = duration_cast<milliseconds>(
                            system_clock::now().time_since_epoch())
                            .count();
 

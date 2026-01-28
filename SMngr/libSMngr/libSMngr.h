@@ -1,7 +1,30 @@
 #pragma once
 #include <string>
+#include <iostream>
 
-class CounterExampleServer {
+long long  currentUtcTime();
+
+class SessionStateItem {
+    public:
+    explicit SessionStateItem(){}
+
+    void setExpiredAt(int msFromNow){
+        _expiredAt =  currentUtcTime() + msFromNow;
+    }
+
+    const long long  expiredAt(){
+        return _expiredAt;
+    }
+
+
+    virtual ~SessionStateItem(){}
+
+    private:
+        long long _expiredAt =  currentUtcTime() + 10000;
+    
+};
+
+class CounterExampleServer: public SessionStateItem {
     public:
     explicit CounterExampleServer(int initialValue):val{initialValue}{
 

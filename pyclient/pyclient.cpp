@@ -18,10 +18,9 @@ PYBIND11_MODULE(pyclient, m)
      py::class_<AsyncData<double>>(m, "AsyncDataDouble")
          .def("get", &AsyncData<double>::get);
 
-     py::class_<CounterExample>(m, "CounterExample") 
+     py::class_<CounterExample>(m, "CounterExample")
          .def("get", &CounterExample::get)
-         .def("add", &CounterExample::add)
-         ;
+         .def("add", &CounterExample::add);
 
      py::class_<ClientBal>(m, "ClientBal")
          .def(py::init<std::string, uint16_t>(),
@@ -31,5 +30,7 @@ PYBIND11_MODULE(pyclient, m)
          .def("serverStop", &ClientBal::serverStop, "Stop server")
          .def("setClientTimeout", &ClientBal::setClientTimeout, "Set client timeout in ms")
          .def("getCounterExample", &ClientBal::getCounterExample, "getCounterExample")
+         .def("sessionStateCleanup", &ClientBal::sessionStateCleanup, "sessionStateCleanup for stream interrupted")
+
          ;
 }

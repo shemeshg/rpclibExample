@@ -14,11 +14,11 @@ public:
         srv.bind("stop", []()
                  { rpc::this_server().stop(); });
         srv.bind("getUuid", []()
-                        { return getUuid(); });                 
+                 { return getUuid(); });
         srv.bind("CounterExampleServerinit", [this](std::string uuid, int initialValue)
                  { sessionState.emplace(uuid, CounterExampleServer(initialValue)); });
         srv.bind("CounterExampleServerAdd",
-                 [this](const std::string &uuid, int val) 
+                 [this](const std::string &uuid, int val)
                  {
                      auto ptr = getSessionObj<CounterExampleServer>(uuid);
                      ptr->add(val);
@@ -29,7 +29,7 @@ public:
                      auto ptr = getSessionObj<CounterExampleServer>(uuid);
                      return ptr->get();
                  });
-        srv.bind("eraseSessionState",
+        srv.bind("sessionStateErase",
                  [this](const std::string &uuid)
                  {
                      auto it = sessionState.find(uuid);
@@ -42,6 +42,8 @@ public:
                          throw std::runtime_error("Session '" + uuid + "' not found");
                      }
                  });
+        srv.bind("sessionStateCleanup", [this]()
+                 { sessionStateCleanup(); });
     }
 
     void start()
@@ -53,6 +55,33 @@ public:
     {
         std::size_t thread_count = std::thread::hardware_concurrency();
         srv.async_run(thread_count);
+    }
+
+    void sessionStateCleanup()
+    {
+        for (auto it = sessionState.begin(); it != sessionState.end();)
+        {
+            bool erase = false;
+
+            std::visit([&](auto &item)
+                       {
+        SessionStateItem* base = dynamic_cast<SessionStateItem*>(&item);
+        if (!base) {
+            throw std::runtime_error(
+                "Unexpected: session '" + it->first +
+                "' does not contain SessionStateItem"
+            );
+        }
+
+        if (base->expiredAt() < currentUtcTime()) {
+            erase = true;
+        } }, it->second);
+
+            if (erase)
+                it = sessionState.erase(it);
+            else
+                ++it;
+        }
     }
 
 private:
