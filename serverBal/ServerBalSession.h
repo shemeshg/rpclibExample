@@ -2,26 +2,81 @@
 #include <libSMngr.h>
 #include "CounterExampleServer.h"
 #include <rpc/server.h>
+#include <rpc/this_handler.h>
 
 class ServerBalSession
 {
 public:
-    void rpcServerBind(rpc::server *srv, std::mutex *sessionMutex){
+    void rpcServerBind(rpc::server *srv)
+    {
         srv->bind("sessionStateErase",
-                 [this, sessionMutex](const std::string &uuid)
-                 {
-                     std::lock_guard<std::mutex> lock(*sessionMutex);
-                     auto it = sessionState.find(uuid);
-                     if (it != sessionState.end())
-                     {
-                         sessionState.erase(it);
-                     }
-                     // We dont throw exceptionif not found because it might have been destroid because of timeout
-                 });
-        srv->bind("sessionStateCleanup", [this, sessionMutex]()
-                 { 
-                    std::lock_guard<std::mutex> lock(*sessionMutex);
-                    sessionStateCleanup(); });                 
+                  [this](const std::string &uuid)
+                  {
+                      std::lock_guard<std::mutex> lock(sessionMutex);
+                      auto it = sessionState.find(uuid);
+                      if (it != sessionState.end())
+                      {
+                          sessionState.erase(it);
+                      }
+                      // We dont throw exceptionif not found because it might have been destroid because of timeout
+                  });
+        srv->bind("sessionStateCleanup", [this]()
+                  { 
+                    std::lock_guard<std::mutex> lock(sessionMutex);
+                    sessionStateCleanup(); });
+    }
+
+    void rpcServerBindCounterExampleServer(rpc::server *srv)
+    {
+        srv->bind("CounterExampleServerinit", [this](std::string uuid, int initialValue)
+                  { 
+                    std::lock_guard<std::mutex> lock(sessionMutex);
+                    sessionState.emplace(uuid, CounterExampleServer(initialValue)); });
+        srv->bind("CounterExampleServerExpiredAt",
+                  [this](const std::string &uuid, int val)
+                  {
+                      CounterExampleServer *ptr = nullptr;
+                      try
+                      {
+                          ptr = getSessionObj<CounterExampleServer>(uuid);
+                          ptr->setExpiredAt(val);
+                      }
+                      catch (const std::exception &e)
+                      {
+                          rpc::this_handler().respond_error(
+                              std::make_tuple(11, e.what()));
+                      }
+                  });
+        srv->bind("CounterExampleServerAdd",
+                  [this](const std::string &uuid, int val)
+                  {
+                      CounterExampleServer *ptr = nullptr;
+                      try
+                      {
+                          ptr = getSessionObj<CounterExampleServer>(uuid);
+                          ptr->add(val);
+                      }
+                      catch (const std::exception &e)
+                      {
+                          rpc::this_handler().respond_error(
+                              std::make_tuple(11, e.what()));
+                      }
+                  });
+        srv->bind("CounterExampleServerGet",
+                  [this](const std::string &uuid)
+                  {
+                      CounterExampleServer *ptr = nullptr;
+                      try
+                      {
+                          ptr = getSessionObj<CounterExampleServer>(uuid);
+                      }
+                      catch (const std::exception &e)
+                      {
+                          rpc::this_handler().respond_error(
+                              std::make_tuple(11, e.what()));
+                      }
+                      return ptr->get();
+                  });
     }
 
     template <typename T>
@@ -76,4 +131,5 @@ public:
         sessionState;
 
 private:
+    std::mutex sessionMutex;
 };

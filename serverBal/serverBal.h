@@ -7,12 +7,18 @@
 #include "SessionStateItem.h"
 #include "ServerBalSession.h"
 
-
-
 class ServerBal
 {
 public:
     ServerBal(uint16_t hostPort) : srv{hostPort}
+    {
+        rpcServerBind();
+        
+        serverBalSession.rpcServerBind(&srv);
+        serverBalSession.rpcServerBindCounterExampleServer(&srv);
+    }
+
+    void rpcServerBind()
     {
         srv.bind("add", [](double a, double b)
                  { return add(a, b); });
@@ -20,58 +26,6 @@ public:
                  { rpc::this_server().stop(); });
         srv.bind("getUuid", []()
                  { return getUuid(); });
-        srv.bind("CounterExampleServerinit", [this](std::string uuid, int initialValue)
-                 { 
-                    std::lock_guard<std::mutex> lock(sessionMutex);
-                    serverBalSession.sessionState.emplace(uuid, CounterExampleServer(initialValue)); });
-        srv.bind("CounterExampleServerExpiredAt",
-                 [this](const std::string &uuid, int val)
-                 {
-                     CounterExampleServer *ptr = nullptr;
-                     try
-                     {
-                         ptr = serverBalSession.getSessionObj<CounterExampleServer>(uuid);
-                         ptr->setExpiredAt(val);
-                     }
-                     catch (const std::exception &e)
-                     {
-                         rpc::this_handler().respond_error(
-                             std::make_tuple(11, e.what()));
-                     }
-                 });
-        srv.bind("CounterExampleServerAdd",
-                 [this](const std::string &uuid, int val)
-                 {
-                     CounterExampleServer *ptr = nullptr;
-                     try
-                     {
-                         ptr = serverBalSession.getSessionObj<CounterExampleServer>(uuid);
-                         ptr->add(val);
-                     }
-                     catch (const std::exception &e)
-                     {
-                         rpc::this_handler().respond_error(
-                             std::make_tuple(11, e.what()));
-                     }
-                 });
-        srv.bind("CounterExampleServerGet",
-                 [this](const std::string &uuid)
-                 {
-                     CounterExampleServer *ptr = nullptr;
-                     try
-                     {
-                         ptr = serverBalSession.getSessionObj<CounterExampleServer>(uuid);
-                     }
-                     catch (const std::exception &e)
-                     {
-                         rpc::this_handler().respond_error(
-                             std::make_tuple(11, e.what()));
-                     }
-                     return ptr->get();
-                 });
-        // Bind ServerBalSession
-        serverBalSession.rpcServerBind(&srv, &sessionMutex);
-
     }
 
     void start()
@@ -88,5 +42,5 @@ public:
 private:
     rpc::server srv;
     ServerBalSession serverBalSession;
-    std::mutex sessionMutex;
+    
 };
