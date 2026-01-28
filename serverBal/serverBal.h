@@ -1,6 +1,7 @@
 #pragma once
 #include <thread>
 #include <rpc/server.h>
+#include "rpc/this_handler.h"
 #include <libSMngr.h>
 #include "rpc/this_server.h"
 
@@ -18,45 +19,67 @@ public:
         srv.bind("CounterExampleServerinit", [this](std::string uuid, int initialValue)
                  { 
                     std::lock_guard<std::mutex> lock(sessionMutex);
-                    sessionState.emplace(uuid, CounterExampleServer(initialValue)); 
-                });
+                    sessionState.emplace(uuid, CounterExampleServer(initialValue)); });
         srv.bind("CounterExampleServerExpiredAt",
                  [this](const std::string &uuid, int val)
                  {
-                     auto ptr = getSessionObj<CounterExampleServer>(uuid);
-                     ptr->setExpiredAt(val);
+                     CounterExampleServer *ptr = nullptr;
+                     try
+                     {
+                         ptr = getSessionObj<CounterExampleServer>(uuid);
+                         ptr->setExpiredAt(val);
+                     }
+                     catch (const std::exception &e)
+                     {
+                         rpc::this_handler().respond_error(
+                             std::make_tuple(11, e.what()));
+                     }
                  });
         srv.bind("CounterExampleServerAdd",
                  [this](const std::string &uuid, int val)
                  {
-                     auto ptr = getSessionObj<CounterExampleServer>(uuid);
-                     ptr->add(val);
+                     CounterExampleServer *ptr = nullptr;
+                     try
+                     {
+                         ptr = getSessionObj<CounterExampleServer>(uuid);
+                         ptr->add(val);
+                     }
+                     catch (const std::exception &e)
+                     {
+                         rpc::this_handler().respond_error(
+                             std::make_tuple(11, e.what()));
+                     }
                  });
         srv.bind("CounterExampleServerGet",
                  [this](const std::string &uuid)
                  {
-                     auto ptr = getSessionObj<CounterExampleServer>(uuid);
+                     CounterExampleServer *ptr = nullptr;
+                     try
+                     {
+                         ptr = getSessionObj<CounterExampleServer>(uuid);
+                     }
+                     catch (const std::exception &e)
+                     {
+                         rpc::this_handler().respond_error(
+                             std::make_tuple(11, e.what()));
+                     }
                      return ptr->get();
                  });
         srv.bind("sessionStateErase",
                  [this](const std::string &uuid)
                  {
-                    std::lock_guard<std::mutex> lock(sessionMutex);
+                     std::lock_guard<std::mutex> lock(sessionMutex);
                      auto it = sessionState.find(uuid);
                      if (it != sessionState.end())
                      {
-                         sessionState.erase(it); // destructor of CounterExampleServer runs here
+                         sessionState.erase(it); 
                      }
-                     else
-                     {
-                         throw std::runtime_error("Session '" + uuid + "' not found");
-                     }
+                     // We dont throw exceptionif not found because it might have been destroid because of timeout
                  });
         srv.bind("sessionStateCleanup", [this]()
                  { 
                     std::lock_guard<std::mutex> lock(sessionMutex);
-                    sessionStateCleanup();
-                 });
+                    sessionStateCleanup(); });
     }
 
     void start()
@@ -86,7 +109,7 @@ public:
             );
         }
 
-        if (base->expiredAt() < currentUtcTime() || base->expiredAt() == -1) {
+        if (base->expiredAt() < currentUtcTime() && base->expiredAt() != -1) {
             erase = true;
         } }, it->second);
 
