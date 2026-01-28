@@ -6,6 +6,17 @@
 
 class CounterExampleServerSession {
     public:
+        explicit CounterExampleServerSession(rpc::server *srv, std::mutex *sessionMutex, 
+            std::unordered_map<
+        std::string,
+        std::variant<CounterExampleServer>>
+        *sessionState){
+            rpcServerBind(srv, sessionMutex, sessionState);
+        }
+
+        ~CounterExampleServerSession(){}
+    private:
+
       void rpcServerBind(rpc::server *srv, std::mutex *sessionMutex, 
             std::unordered_map<
         std::string,

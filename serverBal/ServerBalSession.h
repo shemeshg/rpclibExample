@@ -7,9 +7,10 @@
 class ServerBalSession
 {
 public:
-    explicit ServerBalSession(rpc::server *srv){
+    explicit ServerBalSession(rpc::server *srv): 
+    counterExampleServerSession{srv, &sessionMutex , &sessionState}{
         rpcServerBind(srv);
-        counterExampleServerSession.rpcServerBind(srv, &sessionMutex , &sessionState);
+        
     }
     virtual ~ServerBalSession(){}
     
