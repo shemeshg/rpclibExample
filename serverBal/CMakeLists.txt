@@ -2,7 +2,9 @@ set(serverBal_SRCS
     serverBal.cpp
     SessionStateItem.cpp
     CounterExampleServer.cpp 
+    CounterExampleServerSession.cpp
     ServerBalSession.cpp
+
 
 )
 
