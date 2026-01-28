@@ -20,7 +20,9 @@ PYBIND11_MODULE(pyclient, m)
 
      py::class_<CounterExample>(m, "CounterExample")
          .def("get", &CounterExample::get)
-         .def("add", &CounterExample::add);
+         .def("add", &CounterExample::add)
+         .def("setExpiredAt", &CounterExample::setExpiredAt)         
+         ;
 
      py::class_<ClientBal>(m, "ClientBal")
          .def(py::init<std::string, uint16_t>(),

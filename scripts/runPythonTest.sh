@@ -8,8 +8,8 @@ cat > "$tmpfile" <<EOF
 
 from pyclient import ClientBal, ServerBal
 
-# s = ServerBal(8080)
-# s.startAsync()
+s = ServerBal(8080)
+s.startAsync()
 
 # import threading
 # threading.Thread(target=s.run, daemon=True).start()
@@ -23,6 +23,11 @@ def run_once():
     a.add(20)
     print(a.get())
 run_once()
+
+## test exception
+# a = c.getCounterExample(2)
+# a.setExpiredAt(0)
+# c.sessionStateCleanup()
 EOF
 
 python3 -i "$tmpfile"

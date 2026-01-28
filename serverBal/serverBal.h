@@ -20,6 +20,12 @@ public:
                     std::lock_guard<std::mutex> lock(sessionMutex);
                     sessionState.emplace(uuid, CounterExampleServer(initialValue)); 
                 });
+        srv.bind("CounterExampleServerExpiredAt",
+                 [this](const std::string &uuid, int val)
+                 {
+                     auto ptr = getSessionObj<CounterExampleServer>(uuid);
+                     ptr->setExpiredAt(val);
+                 });
         srv.bind("CounterExampleServerAdd",
                  [this](const std::string &uuid, int val)
                  {
@@ -80,7 +86,7 @@ public:
             );
         }
 
-        if (base->expiredAt() < currentUtcTime()) {
+        if (base->expiredAt() < currentUtcTime() || base->expiredAt() == -1) {
             erase = true;
         } }, it->second);
 

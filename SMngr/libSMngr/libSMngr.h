@@ -9,7 +9,12 @@ class SessionStateItem {
     explicit SessionStateItem(){}
 
     void setExpiredAt(int msFromNow){
-        _expiredAt =  currentUtcTime() + msFromNow;
+        if (msFromNow == -1) {
+            _expiredAt = -1;
+        }else {
+            _expiredAt =  currentUtcTime() + msFromNow;
+        }
+        
     }
 
     const long long  expiredAt(){
@@ -20,7 +25,7 @@ class SessionStateItem {
     virtual ~SessionStateItem(){}
 
     private:
-        long long _expiredAt =  currentUtcTime() + 10000;
+        long long _expiredAt =  -1;
     
 };
 

@@ -32,6 +32,10 @@ class CounterExample {
         c->call("CounterExampleServerAdd",uuid, i);
     }
 
+    void setExpiredAt(int i){
+        c->call("CounterExampleServerExpiredAt",uuid, i);
+    }
+
     int get(){
         return c->call("CounterExampleServerGet", uuid).as<int>();
     }
