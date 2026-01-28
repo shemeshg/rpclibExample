@@ -28,6 +28,8 @@ run_once()
 # a = c.getCounterExample(2)
 # a.setExpiredAt(0)
 # c.sessionStateCleanup()
+# a.get()
+
 EOF
 
 python3 -i "$tmpfile"
