@@ -1,5 +1,6 @@
 set(clientBal_SRCS
-    clientBal.h
+    AsyncData.cpp
+    CounterExample.cpp
     clientBal.cpp
 )
 
