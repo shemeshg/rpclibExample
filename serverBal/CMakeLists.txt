@@ -1,6 +1,9 @@
 set(serverBal_SRCS
     serverBal.h
     serverBal.cpp
+    SessionStateItem.cpp
+    CounterExampleServer.cpp 
+
 )
 
 # Declare the library

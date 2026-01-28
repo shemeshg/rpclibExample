@@ -4,6 +4,8 @@
 #include "rpc/this_handler.h"
 #include <libSMngr.h>
 #include "rpc/this_server.h"
+#include "SessionStateItem.h"
+#include "CounterExampleServer.h"
 
 class ServerBal
 {
