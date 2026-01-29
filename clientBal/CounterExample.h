@@ -1,14 +1,17 @@
 #pragma once
-#include <rpc/client.h>
+#include "ClientSession.h"
 namespace ClntRpc
 {
-    class CounterExample
+
+
+    class CounterExample: public ClientSession
     {
     public:
+        // no copy contr
         CounterExample(const CounterExample &) = delete;
         CounterExample &operator=(const CounterExample &) = delete;
 
-        explicit CounterExample(rpc::client *c, int initialValue) : c{c}, uuid{c->call("getUuid").as<std::string>()}
+        explicit CounterExample(rpc::client *c, int initialValue) : ClientSession{c}
         {
             c->call("CounterExampleServerinit", uuid, initialValue);
         }
@@ -28,12 +31,7 @@ namespace ClntRpc
         }
 
         virtual ~CounterExample()
-        {
-            c->call("sessionStateErase", uuid);
+        {            
         }
-
-    private:
-        rpc::client *c;
-        std::string uuid;
     };
 }
