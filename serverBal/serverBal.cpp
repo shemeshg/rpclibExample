@@ -3,6 +3,7 @@
 #include <thread>
 #include "utils.h"
 #include "rpc/this_server.h"
+#include "sharedConst.h"
 
 namespace SvrRpc
 {
@@ -13,11 +14,11 @@ namespace SvrRpc
 
     void ServerBal::rpcServerBind()
     {
-        srv.bind("add", [](double a, double b)
+        srv.bind(rpcConsts::asyncAdd, [](double a, double b)
                  { return (double)(a + b); });
-        srv.bind("stop", []()
+        srv.bind(rpcConsts::serverStop, []()
                  { rpc::this_server().stop(); });
-        srv.bind("getUuid", []()
+        srv.bind(rpcConsts::getUuid, []()
                  { return getUuid(); });
     }
 

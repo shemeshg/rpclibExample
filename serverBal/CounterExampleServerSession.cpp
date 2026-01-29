@@ -1,5 +1,6 @@
 #include "CounterExampleServerSession.h"
 #include "CounterExampleServer.h"
+#include "sharedConst.h"
 namespace SvrRpc
 {
     CounterExampleServerSession::CounterExampleServerSession(rpc::server *srv, std::mutex *sessionMutex, sessionItemMapType *sessionState)
@@ -9,11 +10,11 @@ namespace SvrRpc
 
     void CounterExampleServerSession::rpcServerBind(rpc::server *srv, std::mutex *sessionMutex, sessionItemMapType *sessionState)
     {
-        srv->bind("CounterExampleServerinit", [sessionMutex, sessionState](std::string uuid, int initialValue)
+        srv->bind(rpcConsts::CounterExample::initUniq, [sessionMutex, sessionState](std::string uuid, int initialValue)
                   {
                   std::lock_guard<std::mutex> lock(*sessionMutex);
                   sessionState->emplace(uuid, std::make_unique<CounterExampleServer>(initialValue)); });
-        srv->bind("CounterExampleServerExpiredAt",
+        srv->bind(rpcConsts::CounterExample::setExpiredAtUniq,
                   [this, sessionState](const std::string &uuid, int val)
                   {
                       try
@@ -29,7 +30,7 @@ namespace SvrRpc
                               std::make_tuple(11, e.what()));
                       }
                   });
-        srv->bind("CounterExampleServerAdd",
+        srv->bind(rpcConsts::CounterExample::addUniq,
                   [this, sessionState](const std::string &uuid, int val)
                   {
                       try
@@ -46,7 +47,7 @@ namespace SvrRpc
                               std::make_tuple(11, e.what()));
                       }
                   });
-        srv->bind("CounterExampleServerGet",
+        srv->bind(rpcConsts::CounterExample::getUniq,
                   [this, sessionState](const std::string &uuid)
                   {
                       CounterExampleServer *ptr = nullptr;

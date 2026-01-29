@@ -1,11 +1,13 @@
 #pragma once
 #include <rpc/client.h>
+#include "sharedConst.h"
+
 namespace ClntRpc
 {
     class ClientSession
     {
     public:
-        explicit ClientSession(rpc::client *c) : c{c}, uuid{c->call("getUuid").as<std::string>()}
+        explicit ClientSession(rpc::client *c) : c{c}, uuid{c->call(rpcConsts::getUuid).as<std::string>()}
         {
         }
 

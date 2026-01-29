@@ -14,3 +14,7 @@ target_link_libraries(clientBal PRIVATE rpc)
 target_include_directories(clientBal PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+target_include_directories(clientBal PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/../sharedConst 
+)

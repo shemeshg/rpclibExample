@@ -4,6 +4,7 @@
 
 #include "AsyncData.h"
 #include "CounterExample.h"
+#include "sharedConst.h"
 
 namespace ClntRpc
 {
@@ -26,7 +27,7 @@ namespace ClntRpc
         AsyncData<T> add(T a, T b)
         {
             validateConnection();
-            std::future<RPCLIB_MSGPACK::object_handle> a_future = c.async_call("add", a, b);
+            std::future<RPCLIB_MSGPACK::object_handle> a_future = c.async_call(rpcConsts::asyncAdd, a, b);
             AsyncData<T> ad(std::move(a_future));
             return ad;
         }
@@ -34,13 +35,13 @@ namespace ClntRpc
         void serverStop()
         {
             validateConnection();
-            c.call("stop");
+            c.call(rpcConsts::serverStop);
         }
 
         void sessionStateCleanup()
         {
             validateConnection();
-            c.call("sessionStateCleanup");
+            c.call(rpcConsts::sessionStateCleanup);
         }
 
         std::unique_ptr<CounterExample> getCounterExample(int initialValue)

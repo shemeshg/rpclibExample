@@ -13,21 +13,21 @@ namespace ClntRpc
 
         explicit CounterExample(rpc::client *c, int initialValue) : ClientSession{c}
         {
-            c->call("CounterExampleServerinit", uuid, initialValue);
+            c->call(rpcConsts::CounterExample::initUniq, uuid, initialValue);
         }
         void add(int i)
         {
-            c->call("CounterExampleServerAdd", uuid, i);
+            c->call(rpcConsts::CounterExample::addUniq, uuid, i);
         }
 
         void setExpiredAt(int i)
         {
-            c->call("CounterExampleServerExpiredAt", uuid, i);
+            c->call(rpcConsts::CounterExample::setExpiredAtUniq, uuid, i);
         }
 
         int get()
         {
-            return c->call("CounterExampleServerGet", uuid).as<int>();
+            return c->call(rpcConsts::CounterExample::getUniq, uuid).as<int>();
         }
 
         virtual ~CounterExample()

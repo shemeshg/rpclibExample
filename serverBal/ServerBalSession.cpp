@@ -1,5 +1,6 @@
 #include "ServerBalSession.h"
 #include "utils.h"
+#include "sharedConst.h"
 namespace SvrRpc
 {
     ServerBalSession::ServerBalSession(rpc::server *srv) : counterExampleServerSession{srv, &sessionMutex, &sessionState}
@@ -20,7 +21,7 @@ namespace SvrRpc
                       }
                       // We dont throw exceptionif not found because it might have been destroid because of timeout
                   });
-        srv->bind("sessionStateCleanup", [this]()
+        srv->bind(rpcConsts::sessionStateCleanup, [this]()
                   {
                   std::lock_guard<std::mutex> lock(sessionMutex);
                   sessionStateCleanup(); });

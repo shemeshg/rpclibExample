@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include "sharedConst.h"
 #include <clientBal.h>
 #include <serverBal.h>
 
@@ -19,21 +20,21 @@ PYBIND11_MODULE(pyclient, m)
          .def("get", &ClntRpc::AsyncData<double>::get);
 
      py::class_<ClntRpc::CounterExample>(m, "CounterExample")
-         .def("get", &ClntRpc::CounterExample::get)
-         .def("add", &ClntRpc::CounterExample::add)
-         .def("setExpiredAt", &ClntRpc::CounterExample::setExpiredAt)         
+         .def(rpcConsts::CounterExample::add, &ClntRpc::CounterExample::get)
+         .def(rpcConsts::CounterExample::get, &ClntRpc::CounterExample::add)
+         .def(rpcConsts::CounterExample::setExpiredAt, &ClntRpc::CounterExample::setExpiredAt)         
          ;
 
      py::class_<ClntRpc::ClientBal>(m, "ClientBal")
          .def(py::init<std::string, uint16_t>(),
               py::arg("hostName"),
               py::arg("hostPort"))
-         .def("add", &ClntRpc::ClientBal::add<double>, "Add two numbers through RPC")
-         .def("serverStop", &ClntRpc::ClientBal::serverStop, "Stop server")
-         .def("setClientTimeout", &ClntRpc::ClientBal::setClientTimeout, "Set client timeout in ms")         
-         .def("sessionStateCleanup", &ClntRpc::ClientBal::sessionStateCleanup, "sessionStateCleanup for stream interrupted")
+         .def(rpcConsts::asyncAdd, &ClntRpc::ClientBal::add<double>, "Add two numbers through RPC")
+         .def(rpcConsts::serverStop, &ClntRpc::ClientBal::serverStop, "Stop server")
+         .def(rpcConsts::setClientTimeout, &ClntRpc::ClientBal::setClientTimeout, "Set client timeout in ms")         
+         .def(rpcConsts::sessionStateCleanup, &ClntRpc::ClientBal::sessionStateCleanup, "sessionStateCleanup for stream interrupted")
          //stream objects
-         .def("getCounterExample", &ClntRpc::ClientBal::getCounterExample, "getCounterExample")
+         .def(rpcConsts::getCounterExample, &ClntRpc::ClientBal::getCounterExample, "get CounterExample")
 
          ;
 }

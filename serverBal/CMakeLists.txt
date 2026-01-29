@@ -20,5 +20,9 @@ target_link_libraries(serverBal PRIVATE rpc Boost::boost)
 # Specify here the include directories exported
 # by this library
 target_include_directories(serverBal PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR} 
+)
+
+target_include_directories(serverBal PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../sharedConst 
 )
