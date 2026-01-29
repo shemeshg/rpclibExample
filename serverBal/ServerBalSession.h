@@ -2,21 +2,23 @@
 #include <rpc/server.h>
 #include <rpc/this_handler.h>
 #include "CounterExampleServerSession.h"
-
-class ServerBalSession
+namespace SvrRpc
 {
-public:
-    explicit ServerBalSession(rpc::server *srv);
-    virtual ~ServerBalSession() {}
+    class ServerBalSession
+    {
+    public:
+        explicit ServerBalSession(rpc::server *srv);
+        virtual ~ServerBalSession() {}
 
-private:
-    CounterExampleServerSession counterExampleServerSession;
+    private:
+        CounterExampleServerSession counterExampleServerSession;
 
-    void rpcServerBind(rpc::server *srv);
+        void rpcServerBind(rpc::server *srv);
 
-    void sessionStateCleanup();
+        void sessionStateCleanup();
 
-    sessionItemMapType sessionState;
+        sessionItemMapType sessionState;
 
-    std::mutex sessionMutex;
-};
+        std::mutex sessionMutex;
+    };
+}

@@ -2,7 +2,7 @@
 #include <clientBal.h>
 
 int main() {
-    ClientBal cb("localhost",8080);
+    ClntRpc::ClientBal cb("localhost",8080);
 
 
     std::cout << "add(2, 3) = ";

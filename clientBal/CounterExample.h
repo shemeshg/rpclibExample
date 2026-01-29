@@ -1,33 +1,39 @@
 #pragma once
 #include <rpc/client.h>
-
-class CounterExample {
-    public:
-    CounterExample(const CounterExample&) = delete;
-    CounterExample& operator=(const CounterExample&) = delete;
-
-    explicit CounterExample(rpc::client *c, int initialValue):
-    c{c}, uuid{c->call("getUuid").as<std::string>()}
+namespace ClntRpc
+{
+    class CounterExample
     {
-        c->call("CounterExampleServerinit",uuid, initialValue);
-    }
-    void add(int i){
-        c->call("CounterExampleServerAdd",uuid, i);
-    }
+    public:
+        CounterExample(const CounterExample &) = delete;
+        CounterExample &operator=(const CounterExample &) = delete;
 
-    void setExpiredAt(int i){
-        c->call("CounterExampleServerExpiredAt",uuid, i);
-    }
+        explicit CounterExample(rpc::client *c, int initialValue) : c{c}, uuid{c->call("getUuid").as<std::string>()}
+        {
+            c->call("CounterExampleServerinit", uuid, initialValue);
+        }
+        void add(int i)
+        {
+            c->call("CounterExampleServerAdd", uuid, i);
+        }
 
-    int get(){
-        return c->call("CounterExampleServerGet", uuid).as<int>();
-    }
+        void setExpiredAt(int i)
+        {
+            c->call("CounterExampleServerExpiredAt", uuid, i);
+        }
 
-    virtual ~CounterExample(){
-        c->call("sessionStateErase",uuid);
-    }
+        int get()
+        {
+            return c->call("CounterExampleServerGet", uuid).as<int>();
+        }
+
+        virtual ~CounterExample()
+        {
+            c->call("sessionStateErase", uuid);
+        }
 
     private:
-    rpc::client *c;
-    std::string uuid;
-};
+        rpc::client *c;
+        std::string uuid;
+    };
+}

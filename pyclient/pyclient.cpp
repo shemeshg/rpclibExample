@@ -6,34 +6,34 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(pyclient, m)
 {
-     py::class_<ServerBal>(m, "ServerBal")
+     py::class_<SvrRpc::ServerBal>(m, "ServerBal")
          .def(py::init<uint16_t>(),
               py::arg("hostPort"))
-         .def("start", &ServerBal::start,
+         .def("start", &SvrRpc::ServerBal::start,
               py::call_guard<py::gil_scoped_release>(),
               "Run server")
-         .def("startAsync", &ServerBal::startAsync,
+         .def("startAsync", &SvrRpc::ServerBal::startAsync,
               "Run server async");
 
-     py::class_<AsyncData<double>>(m, "AsyncDataDouble")
-         .def("get", &AsyncData<double>::get);
+     py::class_<ClntRpc::AsyncData<double>>(m, "AsyncDataDouble")
+         .def("get", &ClntRpc::AsyncData<double>::get);
 
-     py::class_<CounterExample>(m, "CounterExample")
-         .def("get", &CounterExample::get)
-         .def("add", &CounterExample::add)
-         .def("setExpiredAt", &CounterExample::setExpiredAt)         
+     py::class_<ClntRpc::CounterExample>(m, "CounterExample")
+         .def("get", &ClntRpc::CounterExample::get)
+         .def("add", &ClntRpc::CounterExample::add)
+         .def("setExpiredAt", &ClntRpc::CounterExample::setExpiredAt)         
          ;
 
-     py::class_<ClientBal>(m, "ClientBal")
+     py::class_<ClntRpc::ClientBal>(m, "ClientBal")
          .def(py::init<std::string, uint16_t>(),
               py::arg("hostName"),
               py::arg("hostPort"))
-         .def("add", &ClientBal::add<double>, "Add two numbers through RPC")
-         .def("serverStop", &ClientBal::serverStop, "Stop server")
-         .def("setClientTimeout", &ClientBal::setClientTimeout, "Set client timeout in ms")         
-         .def("sessionStateCleanup", &ClientBal::sessionStateCleanup, "sessionStateCleanup for stream interrupted")
+         .def("add", &ClntRpc::ClientBal::add<double>, "Add two numbers through RPC")
+         .def("serverStop", &ClntRpc::ClientBal::serverStop, "Stop server")
+         .def("setClientTimeout", &ClntRpc::ClientBal::setClientTimeout, "Set client timeout in ms")         
+         .def("sessionStateCleanup", &ClntRpc::ClientBal::sessionStateCleanup, "sessionStateCleanup for stream interrupted")
          //stream objects
-         .def("getCounterExample", &ClientBal::getCounterExample, "getCounterExample")
+         .def("getCounterExample", &ClntRpc::ClientBal::getCounterExample, "getCounterExample")
 
          ;
 }

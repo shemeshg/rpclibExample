@@ -2,10 +2,13 @@
 #include <serverBal.h>
 #include <clientBal.h>
 
+
+
+
 class BalTest : public ::testing::Test {
 protected:
-    ServerBal srv{8080};
-    ClientBal cb{"localhost", 8080};
+    SvrRpc::ServerBal srv{8080};
+    ClntRpc::ClientBal cb{"localhost", 8080};
 
     void SetUp() override {
         srv.startAsync();

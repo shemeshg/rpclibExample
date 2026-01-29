@@ -1,28 +1,30 @@
 #pragma once
 #include <unordered_map>
-
-class SessionStateItem {
+namespace SvrRpc
+{
+    class SessionStateItem
+    {
     public:
-    explicit SessionStateItem(){}
+        explicit SessionStateItem() {}
 
-    void setExpiredAt(int msFromNow);
+        void setExpiredAt(int msFromNow);
 
-    const long long  expiredAt(){
-        return _expiredAt;
-    }
+        const long long expiredAt()
+        {
+            return _expiredAt;
+        }
 
-
-    virtual ~SessionStateItem(){}
+        virtual ~SessionStateItem() {}
 
     private:
-        long long _expiredAt =  -1;
-    
-};
+        long long _expiredAt = -1;
+    };
 
-using sessionItemMapType = std::unordered_map<
-                                             std::string,
-                                             std::unique_ptr<SessionStateItem>>;
+    using sessionItemMapType = std::unordered_map<
+        std::string,
+        std::unique_ptr<SessionStateItem>>;
 
-SessionStateItem *getSessionStateItemObj(
-    sessionItemMapType *sessionState,
-    const std::string &uuid);
+    SessionStateItem *getSessionStateItemObj(
+        sessionItemMapType *sessionState,
+        const std::string &uuid);
+}

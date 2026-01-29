@@ -1,7 +1,7 @@
 #include <serverBal.h>
 
 int main() {
-    ServerBal srv{8080};
+    SvrRpc::ServerBal srv{8080};
     
     srv.start();
 

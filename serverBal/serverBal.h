@@ -1,20 +1,21 @@
 #pragma once
 #include <rpc/server.h>
 #include "ServerBalSession.h"
-
-class ServerBal
+namespace SvrRpc
 {
-public:
-    ServerBal(uint16_t hostPort);
+    class ServerBal
+    {
+    public:
+        ServerBal(uint16_t hostPort);
 
-    void rpcServerBind();
+        void rpcServerBind();
 
-    void start();
+        void start();
 
-    void startAsync();
+        void startAsync();
 
-private:
-    rpc::server srv;
-    ServerBalSession serverBalSession;
-    
-};
+    private:
+        rpc::server srv;
+        ServerBalSession serverBalSession;
+    };
+}

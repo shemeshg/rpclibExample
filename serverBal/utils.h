@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
 
+namespace SvrRpc
+{
+    long long currentUtcTime();
 
-long long  currentUtcTime();
-
-
-
-std::string getUuid();
+    std::string getUuid();
+}

@@ -1,14 +1,19 @@
 #pragma once
 #include "SessionStateItem.h"
-class CounterExampleServer: public SessionStateItem {
+
+namespace SvrRpc
+{
+    class CounterExampleServer : public SessionStateItem
+    {
     public:
-    explicit CounterExampleServer(int initialValue):val{initialValue}{
+        explicit CounterExampleServer(int initialValue) : val{initialValue}
+        {
+        }
+        void add(int i);
 
-    }
-    void add(int i);
-
-    int get();
+        int get();
 
     private:
-    int val;
-};
+        int val;
+    };
+}
