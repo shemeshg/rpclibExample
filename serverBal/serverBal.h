@@ -1,41 +1,17 @@
 #pragma once
-#include <thread>
 #include <rpc/server.h>
-#include "rpc/this_handler.h"
-#include "utils.h"
-#include "rpc/this_server.h"
-#include "SessionStateItem.h"
 #include "ServerBalSession.h"
 
 class ServerBal
 {
 public:
-    ServerBal(uint16_t hostPort) : srv{hostPort}, serverBalSession{&srv}
-    {
-        rpcServerBind();
-    
-    }
+    ServerBal(uint16_t hostPort);
 
-    void rpcServerBind()
-    {
-        srv.bind("add", [](double a, double b)
-                 { return (double)(a + b); });
-        srv.bind("stop", []()
-                 { rpc::this_server().stop(); });
-        srv.bind("getUuid", []()
-                 { return getUuid(); });
-    }
+    void rpcServerBind();
 
-    void start()
-    {
-        srv.run();
-    }
+    void start();
 
-    void startAsync()
-    {
-        std::size_t thread_count = std::thread::hardware_concurrency();
-        srv.async_run(thread_count);
-    }
+    void startAsync();
 
 private:
     rpc::server srv;

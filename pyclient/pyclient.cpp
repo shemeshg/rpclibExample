@@ -30,9 +30,10 @@ PYBIND11_MODULE(pyclient, m)
               py::arg("hostPort"))
          .def("add", &ClientBal::add<double>, "Add two numbers through RPC")
          .def("serverStop", &ClientBal::serverStop, "Stop server")
-         .def("setClientTimeout", &ClientBal::setClientTimeout, "Set client timeout in ms")
-         .def("getCounterExample", &ClientBal::getCounterExample, "getCounterExample")
+         .def("setClientTimeout", &ClientBal::setClientTimeout, "Set client timeout in ms")         
          .def("sessionStateCleanup", &ClientBal::sessionStateCleanup, "sessionStateCleanup for stream interrupted")
+         //stream objects
+         .def("getCounterExample", &ClientBal::getCounterExample, "getCounterExample")
 
          ;
 }

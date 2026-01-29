@@ -1,18 +1,11 @@
 #pragma once
-#include "utils.h"
+#include <unordered_map>
 
 class SessionStateItem {
     public:
     explicit SessionStateItem(){}
 
-    void setExpiredAt(int msFromNow){
-        if (msFromNow == -1) {
-            _expiredAt = -1;
-        }else {
-            _expiredAt =  currentUtcTime() + msFromNow;
-        }
-        
-    }
+    void setExpiredAt(int msFromNow);
 
     const long long  expiredAt(){
         return _expiredAt;

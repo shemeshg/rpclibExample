@@ -5,13 +5,9 @@ class CounterExampleServer: public SessionStateItem {
     explicit CounterExampleServer(int initialValue):val{initialValue}{
 
     }
-    void add(int i){
-        this->val += i;
-    }
+    void add(int i);
 
-    int get(){
-        return this->val;
-    }
+    int get();
 
     private:
     int val;
