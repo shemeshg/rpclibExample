@@ -2,7 +2,7 @@
 #include <thread>
 #include <rpc/server.h>
 #include "rpc/this_handler.h"
-#include "libSMngr.h"
+#include "utils.h"
 #include "rpc/this_server.h"
 #include "SessionStateItem.h"
 #include "ServerBalSession.h"
@@ -19,7 +19,7 @@ public:
     void rpcServerBind()
     {
         srv.bind("add", [](double a, double b)
-                 { return a + b; });
+                 { return (double)(a + b); });
         srv.bind("stop", []()
                  { rpc::this_server().stop(); });
         srv.bind("getUuid", []()

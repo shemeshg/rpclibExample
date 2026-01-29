@@ -6,7 +6,7 @@ int main() {
 
 
     std::cout << "add(2, 3) = ";
-    auto five = cb.add(2,3);
+    auto five = cb.add<double>(2,3);
     std::cout << five.get() << std::endl;
 
 

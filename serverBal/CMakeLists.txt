@@ -6,7 +6,7 @@ set(serverBal_SRCS
     CounterExampleServer.cpp 
     CounterExampleServerSession.cpp
     ServerBalSession.cpp
-    libSMngr.cpp
+    utils.cpp
 
 )
 

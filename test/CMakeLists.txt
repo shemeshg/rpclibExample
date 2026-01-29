@@ -9,12 +9,17 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-add_executable(tests smngr_test.cpp)
+add_executable(tests BalTest.cpp)
 
 target_link_libraries(tests
+    serverBal
+    clientBal
+    rpc
     GTest::gtest
     GTest::gtest_main
 )
 
 include(GoogleTest)
 gtest_discover_tests(tests)
+
+
