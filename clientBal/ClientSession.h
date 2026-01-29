@@ -1,0 +1,21 @@
+#pragma once
+#include <rpc/client.h>
+namespace ClntRpc
+{
+    class ClientSession
+    {
+    public:
+        explicit ClientSession(rpc::client *c) : c{c}, uuid{c->call("getUuid").as<std::string>()}
+        {
+        }
+
+        virtual ~ClientSession()
+        {
+            c->call("sessionStateErase", uuid);
+        }
+
+    protected:
+        rpc::client *c;
+        std::string uuid;
+    };
+}

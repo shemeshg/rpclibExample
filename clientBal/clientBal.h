@@ -14,7 +14,7 @@ namespace ClntRpc
         ClientBal &operator=(const ClientBal &) = delete;
         ClientBal(std::string hostName, uint16_t hostPort) : c{hostName, hostPort}
         {
-            setClientTimeout(60000);
+            //setClientTimeout(60000);
         }
 
         void setClientTimeout(int i)
