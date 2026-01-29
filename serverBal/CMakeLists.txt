@@ -1,10 +1,12 @@
+find_package(Boost CONFIG REQUIRED)
+
 set(serverBal_SRCS
     serverBal.cpp
     SessionStateItem.cpp
     CounterExampleServer.cpp 
     CounterExampleServerSession.cpp
     ServerBalSession.cpp
-
+    libSMngr.cpp
 
 )
 
@@ -13,7 +15,7 @@ add_library(serverBal STATIC
     ${serverBal_SRCS}
 )
 
-target_link_libraries(serverBal PRIVATE rpc libSMngr)
+target_link_libraries(serverBal PRIVATE rpc Boost::boost)
 
 # Specify here the include directories exported
 # by this library

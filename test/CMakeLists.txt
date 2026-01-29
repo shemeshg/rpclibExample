@@ -12,7 +12,6 @@ FetchContent_MakeAvailable(googletest)
 add_executable(tests smngr_test.cpp)
 
 target_link_libraries(tests
-    libSMngr
     GTest::gtest
     GTest::gtest_main
 )
