@@ -19,6 +19,8 @@ protected:
 
 TEST_F(BalTest, AddingTwoNumbers)
 {
+    //add that **run async**
+    //.get waits and return answer
     EXPECT_EQ(cb.add<float>(2, 3).get(), 5);
 }
 
@@ -33,6 +35,8 @@ TEST_F(BalTest, SessionTimeoutException)
 {
     auto c = cb.getCounterExample(11);
     c->add(20);
+    // get here is *not about async*, there is a sync remote call that 
+    // called `get`
     auto i = c->get();
     c->setExpiredAt(-2); //default is -1=never, 0=now(0 ms from now)
     cb.sessionStateCleanup();
