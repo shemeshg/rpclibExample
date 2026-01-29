@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 project(rpclibExample LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
+
+if(UNIX AND NOT APPLE)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
+
 enable_testing()
 
 include(FetchContent)

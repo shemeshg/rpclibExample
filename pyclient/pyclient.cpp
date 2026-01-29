@@ -20,8 +20,8 @@ PYBIND11_MODULE(pyclient, m)
          .def("get", &ClntRpc::AsyncData<double>::get);
 
      py::class_<ClntRpc::CounterExample>(m, "CounterExample")
-         .def(rpcConsts::CounterExample::add, &ClntRpc::CounterExample::get)
-         .def(rpcConsts::CounterExample::get, &ClntRpc::CounterExample::add)
+         .def(rpcConsts::CounterExample::add, &ClntRpc::CounterExample::add)
+         .def(rpcConsts::CounterExample::get, &ClntRpc::CounterExample::get)
          .def(rpcConsts::CounterExample::setExpiredAt, &ClntRpc::CounterExample::setExpiredAt)         
          ;
 
