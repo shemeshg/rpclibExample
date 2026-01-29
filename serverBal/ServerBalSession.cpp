@@ -10,7 +10,7 @@ namespace SvrRpc
 
     void ServerBalSession::rpcServerBind(rpc::server *srv)
     {
-        srv->bind("sessionStateErase",
+        srv->bind(rpcConsts::sessionStateErase,
                   [this](const std::string &uuid)
                   {
                       std::lock_guard<std::mutex> lock(sessionMutex);

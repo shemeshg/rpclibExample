@@ -13,7 +13,7 @@ namespace ClntRpc
 
         virtual ~ClientSession()
         {
-            c->call("sessionStateErase", uuid);
+            c->call(rpcConsts::sessionStateErase, uuid);
         }
 
     protected:

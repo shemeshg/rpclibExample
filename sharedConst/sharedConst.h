@@ -6,6 +6,7 @@ namespace rpcConsts {
     constexpr auto setClientTimeout ="setClientTimeout";
     constexpr auto getUuid = "getUuid";
     constexpr auto sessionStateCleanup = "sessionStateCleanup";
+    constexpr auto sessionStateErase = "sessionStateErase";
     constexpr auto getCounterExample ="getCounterExample";
     
     namespace CounterExample {
