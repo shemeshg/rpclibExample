@@ -22,3 +22,7 @@ class SessionStateItem {
 using sessionItemMapType = std::unordered_map<
                                              std::string,
                                              std::unique_ptr<SessionStateItem>>;
+
+SessionStateItem *getSessionStateItemObj(
+    sessionItemMapType *sessionState,
+    const std::string &uuid);

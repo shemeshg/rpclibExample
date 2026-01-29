@@ -17,7 +17,7 @@ void CounterExampleServerSession::rpcServerBind(rpc::server *srv, std::mutex *se
               {
                   try
                   {
-                      if (auto *ptr = dynamic_cast<CounterExampleServer *>(getSessionObj(sessionState, uuid)))
+                      if (auto *ptr = dynamic_cast<CounterExampleServer *>(getSessionStateItemObj(sessionState, uuid)))
                       {
                           ptr->setExpiredAt(val);
                       }
@@ -33,7 +33,7 @@ void CounterExampleServerSession::rpcServerBind(rpc::server *srv, std::mutex *se
               {
                   try
                   {
-                      auto *ptr = dynamic_cast<CounterExampleServer *>(getSessionObj(sessionState, uuid));
+                      auto *ptr = dynamic_cast<CounterExampleServer *>(getSessionStateItemObj(sessionState, uuid));
                       if (ptr)
                       {
                           ptr->add(val);
@@ -51,7 +51,7 @@ void CounterExampleServerSession::rpcServerBind(rpc::server *srv, std::mutex *se
                   CounterExampleServer *ptr = nullptr;
                   try
                   {
-                      ptr = dynamic_cast<CounterExampleServer *>(getSessionObj(sessionState, uuid));
+                      ptr = dynamic_cast<CounterExampleServer *>(getSessionStateItemObj(sessionState, uuid));
                   }
                   catch (const std::exception &e)
                   {
@@ -62,13 +62,4 @@ void CounterExampleServerSession::rpcServerBind(rpc::server *srv, std::mutex *se
               });
 }
 
-SessionStateItem *CounterExampleServerSession::getSessionObj(sessionItemMapType *sessionState, const std::string &uuid)
-{
-    auto it = sessionState->find(uuid);
-    if (it == sessionState->end())
-    {
-        throw std::runtime_error("Unexpected: session '" + uuid + "' not found");
-    }
 
-    return it->second.get(); // extract raw pointer from unique_ptr
-}

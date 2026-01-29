@@ -18,8 +18,5 @@ private:
                        sessionItemMapType
                            *sessionState);
 
-private:
-    SessionStateItem *getSessionObj(
-        sessionItemMapType *sessionState,
-        const std::string &uuid);
+
 };
